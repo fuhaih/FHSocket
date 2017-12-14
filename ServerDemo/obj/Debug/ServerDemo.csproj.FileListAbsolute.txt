@@ -1,0 +1,8 @@
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\bin\Debug\ServerDemo.exe.config
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\bin\Debug\ServerDemo.exe
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\bin\Debug\ServerDemo.pdb
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\bin\Debug\FHSocket.dll
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\bin\Debug\FHSocket.pdb
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\obj\Debug\ServerDemo.csprojResolveAssemblyReference.cache
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\obj\Debug\ServerDemo.exe
+G:\Fuhai\GitWorkSpace\FHSocket\ServerDemo\obj\Debug\ServerDemo.pdb
