@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
-namespace FHSocket.Package
+namespace FHSocket.TCP
 {
     /// <summary>
     /// 作用是用来缓存SocketAsyncEventArgs，不用每次都新建SocketAsyncEventArgs对象

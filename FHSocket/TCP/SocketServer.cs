@@ -1,38 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
-using FHSocket.Package;
-namespace FHSocket.Server
+using FHSocket.TCPInteface;
+
+namespace FHSocket.TCP
 {
-    public class FHSocketServer
+
+    //由官网SocketAsyncEventArgs例子改编
+
+    // Implements the connection logic for the socket server.  
+    // After accepting a connection, all data read from the client 
+    // is sent back to the client. The read and echo back to the client pattern 
+    // is continued until the client disconnects.
+    public class SocketServer
     {
+        private Func<ISocketBuffer> getSocketBuffer = null;
         //private ILog _log = LogManager.GetLogger(typeof(SocketServer));
 
         private object socketLock = new object();
-
         private int m_numConnections;   // 服务端最大连接数量
         BufferManager m_bufferManager;  // 缓存管理
         const int opsToPreAlloc = 2;    //暂时不知道干啥用 read, write (don't alloc buffer space for accepts)
         Socket listenSocket;            // socket监听器
         SocketAsyncEventArgsPool m_readWritePool;//SocketAsyncEventArgs对象池
         int m_numConnectedSockets;      //服务端当前连接数量
-        int m_numData = 0;
+        int m_numData = 0; //获取数据的次数
         Semaphore m_maxNumberAcceptedClients;//信号量，大小为服务端最大连接数量，当连接数量到达最大值时，阻塞连接方法
 
         /// <summary>
         /// 创建一个socket服务端对象
         /// </summary>
         /// <param name="numConnections">socket服务端最大连接数量</param>
-        public FHSocketServer(int numConnections)
+        public SocketServer(int numConnections)
         {
             m_numConnectedSockets = 0;
             m_numConnections = numConnections;
-            m_bufferManager = new BufferManager();
             m_readWritePool = new SocketAsyncEventArgsPool(numConnections);
             m_maxNumberAcceptedClients = new Semaphore(numConnections, numConnections);
         }
@@ -65,11 +69,12 @@ namespace FHSocket.Server
         // for connection requests on</param>
         public void Start(IPEndPoint localEndPoint)
         {
+            m_bufferManager = new BufferManager(getSocketBuffer);
             // create the socket which listens for incoming connections
             listenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             listenSocket.Bind(localEndPoint);
             // start the server with a listen backlog of 100 connections
-            listenSocket.Listen(100);
+            listenSocket.Listen(m_numConnections);
 
             // post accepts on the listening socket
             StartAccept(null);
@@ -112,6 +117,9 @@ namespace FHSocket.Server
             // Get the socket for the accepted client connection and put it into the 
             //ReadEventArg object user token
             SocketAsyncEventArgs readEventArgs = m_readWritePool.Pop();
+            //设置发送和接收数据的超时时间
+            e.AcceptSocket.ReceiveTimeout = 60;
+            e.AcceptSocket.SendTimeout = 60;
             ((AsyncUserToken)readEventArgs.UserToken).Socket = e.AcceptSocket;
 
             byte[] buffer = new byte[e.AcceptSocket.ReceiveBufferSize];
@@ -128,7 +136,7 @@ namespace FHSocket.Server
             // Accept the next connection request
             StartAccept(e);
             Interlocked.Increment(ref m_numConnectedSockets);
-            ClientAccepted(m_numConnectedSockets, e);
+            ClientAccepted(m_numConnectedSockets,e);
         }
 
         // This method is called whenever a receive or send operation is completed on a socket 
@@ -161,19 +169,19 @@ namespace FHSocket.Server
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-
+                
                 //回复信息数据缓存
                 //每当解析出一条完成数据时，就给该缓存添加一段回复数据
                 //每当解析一条完成数据失败时，也给该缓存添加一段回复数据
                 byte[] resultBuffer = new byte[0];
-                m_bufferManager.SetBuffer(e, (pachage, authorize) => {
+                m_bufferManager.SetBuffer(e,(pachage, userinfo)=> {
                     Interlocked.Increment(ref m_numData);
-                    byte[] sendBytes = Reeived(pachage, authorize);// PackegeParser.Parser(pachage, authorize);
+                    byte[] sendBytes = Reeived(pachage,ref userinfo);// PackegeParser.Parser(pachage, authorize);
                     if (sendBytes != null)
                     {
                         resultBuffer = resultBuffer.Concat(sendBytes).ToArray();
                     }
-                }, error => {
+                },error=> {
                     byte[] sendBytes = ReeivedError(error);// PackegeParser.Parser(pachage, authorize);
                     if (sendBytes != null)
                     {
@@ -226,40 +234,45 @@ namespace FHSocket.Server
         }
         private void CloseClientSocket(SocketAsyncEventArgs e)
         {
-
+            
             AsyncUserToken token = e.UserToken as AsyncUserToken;
             // close the socket associated with the client
             try
             {
                 token.Socket.Shutdown(SocketShutdown.Send);
                 token.Socket.Close();
+                // decrement the counter keeping track of the total number of clients connected to the server
+                m_maxNumberAcceptedClients.Release();//释放一个信号量
             }
             // throws if client process has already closed
-            catch (Exception ex) { }
-
-            m_bufferManager.DisposeBuffer(e);
-            // decrement the counter keeping track of the total number of clients connected to the server
-            m_maxNumberAcceptedClients.Release();//释放一个信号量
+            catch (Exception ex) { }     
+            m_bufferManager.DisposeBuffer(e);    
             // Free the SocketAsyncEventArg so they can be reused by another client
             m_readWritePool.Push(e);
             Interlocked.Decrement(ref m_numConnectedSockets);
-            ClientClosed(m_numConnectedSockets, e);
+            ClientClosed(m_numConnectedSockets,e);
         }
-        public virtual byte[] Reeived(PackegeData pachage, SocketAuthorize authorize)
+        public virtual byte[] Reeived(byte[] pachage,ref UserAgent socket)
         {
             return null;
         }
         public virtual void ClientAccepted(int clientNum, SocketAsyncEventArgs e)
         {
-
+            
         }
         public virtual void ClientClosed(int clientNum, SocketAsyncEventArgs e)
         {
-
+            
         }
         public virtual byte[] ReeivedError(Exception ex)
         {
             return null;
         }
+
+        public void RegisterSocketBuffer<Tbuffer>() where Tbuffer :ISocketBuffer,new()
+        {
+            getSocketBuffer = () => { return new Tbuffer(); };
+        }
     }
+
 }
