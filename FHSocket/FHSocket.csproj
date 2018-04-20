@@ -41,15 +41,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
-    <Compile Include="Client\FHSocketClient.cs" />
-    <Compile Include="Package\AsyncUserToken.cs" />
-    <Compile Include="Package\BufferManager.cs" />
-    <Compile Include="Package\PackegeData.cs" />
-    <Compile Include="Package\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="Package\SocketAuthorize.cs" />
-    <Compile Include="Package\SocketBuffer.cs" />
+    <Compile Include="Exceptions\PackageException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Server\FHSocketServer.cs" />
+    <Compile Include="Security\ArrayHelper.cs" />
+    <Compile Include="Security\SecurityHelper.cs" />
+    <Compile Include="TCPInteface\ISocketBuffer.cs" />
+    <Compile Include="TCP\AsyncUserToken.cs" />
+    <Compile Include="TCP\BufferManager.cs" />
+    <Compile Include="TCP\DefaultSocketBuffer.cs" />
+    <Compile Include="TCP\SocketAsyncEventArgsPool.cs" />
+    <Compile Include="TCP\SocketAuthorize.cs" />
+    <Compile Include="TCP\SocketBuffer.cs" />
+    <Compile Include="TCP\SocketServer.cs" />
+    <Compile Include="TCP\SocketSetting.cs" />
+    <Compile Include="TCP\UserAgent.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
