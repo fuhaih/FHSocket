@@ -1,12 +1,19 @@
 ﻿using FHSocket.TCPInteface;
 using System.Collections.Generic;
 using System.Linq;
-namespace FHSocket.TCP
+using System;
+
+namespace FHSocket.Buffer
 {
     class DefaultSocketBuffer:ISocketBuffer
     {
         public object BufferLock = new object();
-        public UserAgent UserInfo { get; set; }
+        private UserAgent userinfo = new UserAgent();
+        public UserAgent UserInfo
+        {
+            get { return userinfo; }
+            set { userinfo = value; }
+        }
         private byte[] Buffer = new byte[0];
         public DefaultSocketBuffer()
         {
@@ -29,7 +36,8 @@ namespace FHSocket.TCP
                     byte[] result = Buffer.Take(Buffer.Length).ToArray();
                     return result;
                 }
-                else {
+                else
+                {
                     return null;
                 }
             }

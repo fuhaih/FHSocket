@@ -42,19 +42,19 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Exceptions\PackageException.cs" />
+    <Compile Include="Exceptions\SocketCloseType.cs" />
+    <Compile Include="Exceptions\SocketErrorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\ArrayHelper.cs" />
     <Compile Include="Security\SecurityHelper.cs" />
     <Compile Include="TCPInteface\ISocketBuffer.cs" />
     <Compile Include="TCP\AsyncUserToken.cs" />
-    <Compile Include="TCP\BufferManager.cs" />
-    <Compile Include="TCP\DefaultSocketBuffer.cs" />
+    <Compile Include="Buffer\BufferManager.cs" />
+    <Compile Include="Buffer\DefaultSocketBuffer.cs" />
     <Compile Include="TCP\SocketAsyncEventArgsPool.cs" />
     <Compile Include="TCP\SocketAuthorize.cs" />
-    <Compile Include="TCP\SocketBuffer.cs" />
     <Compile Include="TCP\SocketServer.cs" />
-    <Compile Include="TCP\SocketSetting.cs" />
-    <Compile Include="TCP\UserAgent.cs" />
+    <Compile Include="Buffer\UserAgent.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

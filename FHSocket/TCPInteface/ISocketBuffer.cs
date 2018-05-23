@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FHSocket.Buffer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TCPServer.TCP;
 
 namespace FHSocket.TCPInteface
 {
@@ -22,9 +22,5 @@ namespace FHSocket.TCPInteface
         /// </summary>
         /// <returns></returns>
         byte[] Next();
-        /// <summary>
-        /// 清空缓存和其他数据
-        /// </summary>
-        void Clear();
     }
 }
