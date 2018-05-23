@@ -7,6 +7,7 @@ namespace FHSocket.TCP
 {
     public class AsyncUserToken
     {
+        public DateTime LastActiveTime { get; internal set; }
         public Socket Socket { get; set; }
     }
 }

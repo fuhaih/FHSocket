@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientDemo", "ClientDemo\Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerDemo", "ServerDemo\ServerDemo.csproj", "{922AA748-4BB3-49A2-AAFA-B5D106EA708A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOCPSocket", "IOCPSocket\IOCPSocket.csproj", "{79CE7249-2117-47A5-8F02-BEC252700AAD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{922AA748-4BB3-49A2-AAFA-B5D106EA708A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{922AA748-4BB3-49A2-AAFA-B5D106EA708A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{922AA748-4BB3-49A2-AAFA-B5D106EA708A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79CE7249-2117-47A5-8F02-BEC252700AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79CE7249-2117-47A5-8F02-BEC252700AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79CE7249-2117-47A5-8F02-BEC252700AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79CE7249-2117-47A5-8F02-BEC252700AAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
