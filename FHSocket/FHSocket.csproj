@@ -40,23 +40,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Buffer\ClientOption.cs" />
+    <Compile Include="Buffer\SocketPackage.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Exceptions\PackageException.cs" />
     <Compile Include="Exceptions\SocketCloseType.cs" />
     <Compile Include="Exceptions\SocketErrorType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\ArrayHelper.cs" />
-    <Compile Include="Security\SecurityHelper.cs" />
     <Compile Include="TCPInteface\ISocketBuffer.cs" />
+    <Compile Include="Buffer\DefaultSocketBuffer.cs" />
+    <Compile Include="Buffer\UserAgent.cs" />
     <Compile Include="TCP\AsyncUserToken.cs" />
     <Compile Include="Buffer\BufferManager.cs" />
-    <Compile Include="Buffer\DefaultSocketBuffer.cs" />
+    <Compile Include="TCPInteface\IBagConfig.cs" />
+    <Compile Include="TCPInteface\IMassageHandle.cs" />
     <Compile Include="TCP\SocketAsyncEventArgsPool.cs" />
-    <Compile Include="TCP\SocketAuthorize.cs" />
+    <Compile Include="Buffer\SocketBuffer.cs" />
     <Compile Include="TCP\SocketServer.cs" />
-    <Compile Include="Buffer\UserAgent.cs" />
+    <Compile Include="TCP\StickyBagManager.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Channel\" />
+    <Folder Include="Security\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
