@@ -18,10 +18,10 @@ namespace FHSocket.TCP
     public class SocketServer:IBagConfig
     {
         private int m_numConnections;   // the maximum number of connections the sample is designed to handle simultaneously 
-        private int m_receiveBufferSize;// buffer size to use for each socket I/O operation 
+        //private int m_receiveBufferSize;// buffer size to use for each socket I/O operation 
         BufferManager m_bufferManager;  // represents a large reusable set of buffers for all socket operations
 
-        StickyBagManager m_bagManager;
+        SocketManager m_socketManager;
 
         const int opsToPreAlloc = 2;    // read, write (don't alloc buffer space for accepts)
         Socket listenSocket;            // the socket used to listen for incoming connection requests
@@ -37,12 +37,11 @@ namespace FHSocket.TCP
         private IMassageHandle msgHandle;
         public IMassageHandle MsgHandle { get { return msgHandle; } }
 
-
         public SocketServer(SocketServerBuilder builder)
         {
             this.msgHandle = builder.MsgHandle;
             this.m_numConnections = builder.MaxConnections;
-            this.m_receiveBufferSize = builder.ReceiveBufferSize;
+            //this.m_receiveBufferSize = builder.ReceiveBufferSize;
             this.m_listen_port = builder.Port;
             this.m_ipaddress = builder.Address;
 
@@ -56,7 +55,7 @@ namespace FHSocket.TCP
             //m_bufferManager = new BufferManager();
 
 
-            m_bagManager = new StickyBagManager(this);
+            m_socketManager = new SocketManager(this);
 
             m_readWritePool = new SocketAsyncEventArgsPool(builder.MaxConnections);
             m_maxNumberAcceptedClients = new SemaphoreSlim(builder.MaxConnections, builder.MaxConnections);
@@ -135,7 +134,7 @@ namespace FHSocket.TCP
         //
         // <param name="acceptEventArg">The context object to use when issuing 
         // the accept operation on the server's listening socket</param>
-        public void StartAccept(SocketAsyncEventArgs acceptEventArg)
+        private void StartAccept(SocketAsyncEventArgs acceptEventArg)
         {
             if (acceptEventArg == null)
             {
@@ -215,12 +214,20 @@ namespace FHSocket.TCP
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                //increment the count of the total bytes receive by the server
+                //increment the count of the total bytes receive by the serve  r
                 Interlocked.Add(ref m_totalBytesRead, e.BytesTransferred);
                 Console.WriteLine("The server has read a total of {0} bytes", m_totalBytesRead);
 
-                m_bagManager.Deal(e);
-                ProcessSend(e);
+                if (m_socketManager.Read(e))
+                {
+                    //读取到一个完整消息时，发送一个回复给客户端
+                    //如果没有需要回复的消息，就继续接收
+                    //否则要把回复消息发送回客户端才能继续接收
+                }
+                else {
+                    //没有获取完整的消息时，再继续读取socket的缓存。
+                    ProcessSend(e);
+                }
                 //echo the data received back to the client
                 //e.SetBuffer(e.Offset, e.BytesTransferred);
                 //bool willRaiseEvent = token.Socket.SendAsync(e);
@@ -275,7 +282,7 @@ namespace FHSocket.TCP
             // decrement the counter keeping track of the total number of clients connected to the server
             Interlocked.Decrement(ref m_numConnectedSockets);
 
-            m_bagManager.Clean(e);
+            m_socketManager.Clean(e);
             // Free the SocketAsyncEventArg so they can be reused by another client
             m_readWritePool.Push(e);
 
@@ -283,7 +290,6 @@ namespace FHSocket.TCP
             Console.WriteLine("A client has been disconnected from the server. There are {0} clients connected to the server", m_numConnectedSockets);
         }
     }
-
 
     /// <summary>
     /// 建造者模式
@@ -305,37 +311,66 @@ namespace FHSocket.TCP
 
         private int port = 6606;
         public int Port { get { return port; } }
-        
+
+        /// <summary>
+        /// 设置数据处理类，该类型需要实现IMassageHandle接口
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public SocketServerBuilder WithMassageHandle<T>() where T : IMassageHandle
         {
             msgHandle = Activator.CreateInstance<T>();
             return this;
         }
 
+        /// <summary>
+        /// 设置host;127.0.0.1只能本地访问，要设置远程访问需要0.0.0.0
+        /// </summary>
+        /// <param name="host"></param>
+        /// <returns></returns>
+        public SocketServerBuilder WithHost(string host)
+        {
+            address = IPAddress.Parse(host);
+            return this;
+        }
+
+        /// <summary>
+        /// 设置客户端最大连接数
+        /// </summary>
+        /// <param name="maxconnections"></param>
+        /// <returns></returns>
         public SocketServerBuilder SetMaxConnections(int maxconnections)
         {
             this.maxConnections = maxconnections;
             return this;
         }
 
+        /// <summary>
+        /// 设置缓冲区大小
+        /// </summary>
+        /// <param name="receiveBufferSize"></param>
+        /// <returns></returns>
         public SocketServerBuilder SetReceiveBufferSize(int receiveBufferSize)
         {
             this.receiveBufferSize = receiveBufferSize;
             return this;
         }
 
-        public SocketServerBuilder SetAddress(string ipaddress)
-        {
-            address = IPAddress.Parse(ipaddress);
-            return this;
-        }
-
+        /// <summary>
+        /// 设置监听端口
+        /// </summary>
+        /// <param name="port"></param>
+        /// <returns></returns>
         public SocketServerBuilder SetPort(int port)
         {
             this.port = port;
             return this;
         }
 
+        /// <summary>
+        /// 构建SocketServe
+        /// </summary>
+        /// <returns></returns>
         public SocketServer Build()
         {
             return new SocketServer(this);
