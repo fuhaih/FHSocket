@@ -1,4 +1,0 @@
-G:\Fuhai\GitWorkSpace\FHSocket\FHSocket\bin\Debug\FHSocket.dll
-G:\Fuhai\GitWorkSpace\FHSocket\FHSocket\bin\Debug\FHSocket.pdb
-G:\Fuhai\GitWorkSpace\FHSocket\FHSocket\obj\Debug\FHSocket.dll
-G:\Fuhai\GitWorkSpace\FHSocket\FHSocket\obj\Debug\FHSocket.pdb
