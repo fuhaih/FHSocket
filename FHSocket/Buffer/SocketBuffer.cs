@@ -20,6 +20,8 @@ namespace FHSocket.Buffer
         /// </summary>
         private byte[] buffer=new byte[0];
 
+        //设置一个writer
+
         SocketPackage package = null;
 
         IMassageHandle msgHandle;
@@ -38,16 +40,16 @@ namespace FHSocket.Buffer
             SplitPackage();
         }
 
-        public void Add(SocketAsyncEventArgs e)
+        public bool Add(SocketAsyncEventArgs e)
         {
             byte[] newbuffer = new byte[buffer.Length+ e.BytesTransferred];
             Array.Copy(buffer, 0, newbuffer, 0, buffer.Length);
             Array.Copy(e.Buffer, e.Offset, newbuffer, buffer.Length, e.BytesTransferred);
             buffer = newbuffer;
-            SplitPackage();
+            return SplitPackage();
         }
 
-        public void SplitPackage()
+        public bool SplitPackage()
         {
             if (package == null)
             {
@@ -58,10 +60,15 @@ namespace FHSocket.Buffer
                 bool writecompleted = package.Write(ref buffer);
                 if (writecompleted)
                 {
-                    msgHandle?.Handle(package,option);
+                    msgHandle?.Handle(package, option);
                     package = null;
                     SplitPackage();
-                } 
+                    return true;
+                }
+                return false;
+            }
+            else {
+                return false;
             }
         }
 

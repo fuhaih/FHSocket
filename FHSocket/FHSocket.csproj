@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Buffer\ClientOption.cs" />
+    <Compile Include="Buffer\SocketDataType.cs" />
     <Compile Include="Buffer\SocketPackage.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Exceptions\PackageException.cs" />
