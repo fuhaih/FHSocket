@@ -43,6 +43,7 @@
     <Compile Include="Buffer\ClientOption.cs" />
     <Compile Include="Buffer\SocketDataType.cs" />
     <Compile Include="Buffer\SocketPackage.cs" />
+    <Compile Include="Buffer\SocketWriter.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Exceptions\PackageException.cs" />
     <Compile Include="Exceptions\SocketCloseType.cs" />
@@ -58,7 +59,7 @@
     <Compile Include="TCP\SocketAsyncEventArgsPool.cs" />
     <Compile Include="Buffer\SocketBuffer.cs" />
     <Compile Include="TCP\SocketServer.cs" />
-    <Compile Include="TCP\StickyBagManager.cs" />
+    <Compile Include="TCP\SocketManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Channel\" />

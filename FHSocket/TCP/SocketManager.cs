@@ -29,7 +29,7 @@ namespace FHSocket.TCP
         {
 
         }
-
+          
         /// <summary>
         /// 读取消息，如果读取到一个完整的消息，返回true，没有获取完整消息，返回false
         /// </summary>

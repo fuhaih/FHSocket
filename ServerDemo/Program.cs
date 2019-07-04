@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using FHSocket.Server;
+using FHSocket.TCP;
 using System.Net;
 namespace ServerDemo
 {
@@ -17,9 +17,14 @@ namespace ServerDemo
             IPAddress ip = IPAddress.Parse(host);
             IPEndPoint ipe = new IPEndPoint(ip, port);
 
-            FHSocketServer server = new FHSocketServer(1000);
-            server.Init();
-            server.Start(ipe);
+            SocketServer server = new SocketServerBuilder()
+                .WithMassageHandle<MassageHandle>()
+                .WithHost("0.0.0.0")
+                .SetMaxConnections(1000)
+                .SetReceiveBufferSize(32 * 1024)
+                .SetPort(6606)
+                .Build();
+            server.StartListen();
             while (true)
             {
                 Thread.Sleep(100);
