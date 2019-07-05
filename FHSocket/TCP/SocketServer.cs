@@ -223,13 +223,7 @@ namespace FHSocket.TCP
                     //读取到一个完整消息时，发送一个回复给客户端
                     //如果没有需要回复的消息，就继续接收
                     //否则要把回复消息发送回客户端才能继续接收
-
-                    //echo the data received back to the client
-                    bool willRaiseEvent = token.Socket.SendAsync(e);
-                    if (!willRaiseEvent)
-                    {
-                        ProcessSend(e);
-                    }
+                    Send(e);
                 }
                 else {
                     /**没有获取完整的消息时，再继续读取socket的缓存*/
@@ -264,7 +258,6 @@ namespace FHSocket.TCP
                     // read the next block of data send from the client
                     Receive(e);
                 }
-
             }
             else
             {
@@ -285,6 +278,7 @@ namespace FHSocket.TCP
 
         private void Send(SocketAsyncEventArgs e)
         {
+            //echo the data received back to the client
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             bool willRaiseEvent = token.Socket.SendAsync(e);
             if (!willRaiseEvent)
