@@ -24,11 +24,6 @@ namespace FHSocket.TCP
         {
             this.Config = config;
         }
-
-        public void InitBuffer()
-        {
-
-        }
           
         /// <summary>
         /// 读取消息，如果读取到一个完整的消息，返回true，没有获取完整消息，返回false
@@ -47,7 +42,7 @@ namespace FHSocket.TCP
 
         /// <summary>
         /// 把响应数据写入到SocketAsyncEventArgs中
-        /// 写入成功返回true，返回false，表示没有数据返回到客户端
+        /// 写入成功返回true，否则返回false，表示没有数据返回到客户端
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
@@ -61,6 +56,10 @@ namespace FHSocket.TCP
             return buffer.Write(e);
         }
 
+        /// <summary>
+        /// 移除
+        /// </summary>
+        /// <param name="e"></param>
         public void Clean(SocketAsyncEventArgs e)
         {
             SocketBuffer buffer;

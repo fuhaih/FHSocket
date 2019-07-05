@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FHSocket.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace FHSocket.Buffer
             if (buffer.Length == 0) return null;
             if (buffer[0] != 0x1f || buffer[1] != 0x1f)
             {
-                throw new Exception("报文头异常");
+                throw new PackageException("报文头异常");
             }
             SocketDataType type = (SocketDataType)buffer[2];
             SocketPackage package;
