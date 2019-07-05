@@ -42,12 +42,23 @@ namespace FHSocket.TCP
             {
                 return new SocketBuffer(Config.MsgHandle,new ClientOption { EndPoint=(IPEndPoint)e.AcceptSocket.RemoteEndPoint});
             });
-            //byte[] bufferbytes = new byte[e.BytesTransferred];
+            return buffer.Read(e);
+        }
 
-            //Array.Copy(e.Buffer, e.Offset, bufferbytes, 0, e.BytesTransferred);
-            //buffer.Add(bufferbytes);
-
-            return buffer.Add(e);
+        /// <summary>
+        /// 把响应数据写入到SocketAsyncEventArgs中
+        /// 写入成功返回true，返回false，表示没有数据返回到客户端
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public bool Write(SocketAsyncEventArgs e)
+        {
+            int token = ((AsyncUserToken)e.UserToken).Token;
+            SocketBuffer buffer = SocketBuffers.GetOrAdd(token, t =>
+            {
+                return new SocketBuffer(Config.MsgHandle, new ClientOption { EndPoint = (IPEndPoint)e.AcceptSocket.RemoteEndPoint });
+            });
+            return buffer.Write(e);
         }
 
         public void Clean(SocketAsyncEventArgs e)

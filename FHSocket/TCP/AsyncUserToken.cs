@@ -11,8 +11,8 @@ namespace FHSocket.TCP
     {
         public Socket Socket { get; set; }
         /// <summary>
-        /// 用来标记SocketAsyncEventArgs
-        /// hashcode可能会重复，虽然概率小
+        /// 用来标记SocketAsyncEventArgs,
+        /// 不使用hashcode，因为可能会重复，虽然概率小
         /// </summary>
         public int Token { get; set; }
     }

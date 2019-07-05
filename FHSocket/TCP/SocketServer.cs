@@ -218,23 +218,23 @@ namespace FHSocket.TCP
                 Interlocked.Add(ref m_totalBytesRead, e.BytesTransferred);
                 Console.WriteLine("The server has read a total of {0} bytes", m_totalBytesRead);
 
-                if (m_socketManager.Read(e))
+                if (m_socketManager.Read(e)&& m_socketManager.Write(e))
                 {
                     //读取到一个完整消息时，发送一个回复给客户端
                     //如果没有需要回复的消息，就继续接收
                     //否则要把回复消息发送回客户端才能继续接收
+
+                    //echo the data received back to the client
+                    bool willRaiseEvent = token.Socket.SendAsync(e);
+                    if (!willRaiseEvent)
+                    {
+                        ProcessSend(e);
+                    }
                 }
                 else {
-                    //没有获取完整的消息时，再继续读取socket的缓存。
-                    ProcessSend(e);
+                    /**没有获取完整的消息时，再继续读取socket的缓存*/
+                    Receive(e);
                 }
-                //echo the data received back to the client
-                //e.SetBuffer(e.Offset, e.BytesTransferred);
-                //bool willRaiseEvent = token.Socket.SendAsync(e);
-                //if (!willRaiseEvent)
-                //{
-                //    ProcessSend(e);
-                //}
             }
             else
             {
@@ -251,18 +251,45 @@ namespace FHSocket.TCP
         {
             if (e.SocketError == SocketError.Success)
             {
+                /**如果数据过大，需要多次发送，这里判断还有没有需要发送的数据
+                 */
                 // done echoing data back to the client
                 AsyncUserToken token = (AsyncUserToken)e.UserToken;
-                // read the next block of data send from the client
-                bool willRaiseEvent = token.Socket.ReceiveAsync(e);
-                if (!willRaiseEvent)
+                if (m_socketManager.Write(e))
                 {
-                    ProcessReceive(e);
+                    Send(e);
                 }
+                else {
+                    //设置buffer
+                    // read the next block of data send from the client
+                    Receive(e);
+                }
+
             }
             else
             {
                 CloseClientSocket(e);
+            }
+        }
+
+        private void Receive(SocketAsyncEventArgs e)
+        {
+            AsyncUserToken token = (AsyncUserToken)e.UserToken;
+            m_bufferManager.ResetBuffer(e);
+            bool willRaiseEvent = token.Socket.ReceiveAsync(e);
+            if (!willRaiseEvent)
+            {
+                ProcessReceive(e);
+            }
+        }
+
+        private void Send(SocketAsyncEventArgs e)
+        {
+            AsyncUserToken token = (AsyncUserToken)e.UserToken;
+            bool willRaiseEvent = token.Socket.SendAsync(e);
+            if (!willRaiseEvent)
+            {
+                ProcessSend(e);
             }
         }
 

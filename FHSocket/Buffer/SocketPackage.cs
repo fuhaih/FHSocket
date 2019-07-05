@@ -9,12 +9,12 @@ namespace FHSocket.Buffer
 {
     /**定义数据结构
      * ------------------------------------------------------------------------------------
-     * |（0x1f 0x1f）|  datatype  |  0 headlength head  | ........ |  1 datalenght data  |                   
+     * |  （0x1f）  |  datatype  |  0 headlength head  | ........ |  1 datalenght data  |                   
      * ------------------------------------------------------------------------------------
-     *   两位分隔符   两位数据类型  
+     *   1字节分隔符  1字节两位数据类型
      *   
-     *   head : 头信息,1位标志位(0) 8位长度  head信息
-     *   data : 数据,1位标志位(1) 6位幂(长度位的长度) n位长度(n由幂决定) data数据 
+     *   head : 头信息,1位标志位(0) 15位长度 共2字节  head信息
+     *   data : 数据,1位标志位(1) 63位长度 8字节 data数据 
      *   data这样设计是为了能扩展更大的数据。
      */
 
@@ -63,7 +63,7 @@ namespace FHSocket.Buffer
             return result;
         }
     }
-             
+
     public abstract class SocketPackage
     {
         /// <summary>

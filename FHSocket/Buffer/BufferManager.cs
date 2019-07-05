@@ -60,6 +60,11 @@ namespace FHSocket.Buffer
             return true;
         }
 
+        public void ResetBuffer(SocketAsyncEventArgs args)
+        {
+            args.SetBuffer(m_buffer, args.Offset, m_bufferSize);
+        }   
+
         // Removes the buffer from a SocketAsyncEventArg object.  
         // This frees the buffer back to the buffer pool
         public void FreeBuffer(SocketAsyncEventArgs args)

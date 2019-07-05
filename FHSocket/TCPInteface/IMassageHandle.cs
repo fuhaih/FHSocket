@@ -9,6 +9,6 @@ namespace FHSocket.TCPInteface
 {
     public interface IMassageHandle
     {
-        void Handle(SocketPackage package,ClientOption option);
+        ISocketResult Handle(SocketPackage package,ClientOption option);
     }
 }

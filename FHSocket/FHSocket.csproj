@@ -43,7 +43,7 @@
     <Compile Include="Buffer\ClientOption.cs" />
     <Compile Include="Buffer\SocketDataType.cs" />
     <Compile Include="Buffer\SocketPackage.cs" />
-    <Compile Include="Buffer\SocketWriter.cs" />
+    <Compile Include="Buffer\SocketResult.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="Exceptions\PackageException.cs" />
     <Compile Include="Exceptions\SocketCloseType.cs" />

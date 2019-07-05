@@ -19,7 +19,6 @@ namespace FHSocket.Buffer
         /// 可以优化，扩展内存。
         /// </summary>
         private byte[] buffer=new byte[0];
-
         //设置一个writer
 
         SocketPackage package = null;
@@ -27,6 +26,10 @@ namespace FHSocket.Buffer
         IMassageHandle msgHandle;
 
         ClientOption option;
+
+        private byte[] sendBuffer = new byte[0];
+
+        private int currentIndex = 0;
 
         public SocketBuffer(IMassageHandle msghandle,ClientOption option)
         {
@@ -40,13 +43,35 @@ namespace FHSocket.Buffer
             SplitPackage();
         }
 
-        public bool Add(SocketAsyncEventArgs e)
+        public bool Read(SocketAsyncEventArgs e)
         {
             byte[] newbuffer = new byte[buffer.Length+ e.BytesTransferred];
             Array.Copy(buffer, 0, newbuffer, 0, buffer.Length);
             Array.Copy(e.Buffer, e.Offset, newbuffer, buffer.Length, e.BytesTransferred);
             buffer = newbuffer;
             return SplitPackage();
+        }
+
+        public bool Write(SocketAsyncEventArgs e)
+        {
+            if (sendBuffer.Length == 0) return false;
+            if (currentIndex >= sendBuffer.Length)
+            {
+                sendBuffer = new byte[0];
+                return false;
+            }
+            int postlenth = 0;
+            if (sendBuffer.Length - currentIndex > e.Count)
+            {
+                postlenth = e.Count;
+            }
+            else {
+                postlenth = sendBuffer.Length - currentIndex;
+            }
+            Array.Copy(sendBuffer, currentIndex, e.Buffer, e.Offset, postlenth);
+            e.SetBuffer(e.Offset, postlenth);
+            currentIndex = currentIndex + postlenth;
+            return true;
         }
 
         public bool SplitPackage()
@@ -60,10 +85,12 @@ namespace FHSocket.Buffer
                 bool writecompleted = package.Write(ref buffer);
                 if (writecompleted)
                 {
-                    msgHandle?.Handle(package, option);
+                    ISocketResult result = msgHandle?.Handle(package, option);
+                    sendBuffer = result.GetResultData();
+                    currentIndex = 0;
                     package = null;
-                    SplitPackage();
-                    return true;
+                    //SplitPackage();
+                    //return true;
                 }
                 return false;
             }
