@@ -18,6 +18,16 @@ namespace FHSocket.Buffer
         {
             throw new NotImplementedException();
         }
+
+        public FileResult(string filepath)
+        {
+
+        }
+
+        public static implicit operator FileResult(string value)
+        {
+            return new FileResult(value);
+        }
     }
 
     public class NormalResult : ISocketResult
@@ -26,6 +36,28 @@ namespace FHSocket.Buffer
         {
             throw new NotImplementedException();
         }
+
+        public NormalResult(string value)
+        {
+
+        }
+
+        public NormalResult(byte[] value)
+        {
+
+        }
+
+        public static implicit operator NormalResult(string value)
+        {
+            return new NormalResult(value);
+        }
+
+        public static implicit operator NormalResult(byte[] value)
+        {
+            return new NormalResult(value);
+        }
+
+
     }
 
     public class NonResult : ISocketResult

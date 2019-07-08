@@ -10,9 +10,11 @@ namespace ServerDemo
 {
     public class MassageHandle : IMassageHandle
     {
-        public void Handle(SocketPackage package, ClientOption option)
+
+        ISocketResult IMassageHandle.Handle(SocketPackage package, ClientOption option)
         {
-            throw new NotImplementedException();
+            NormalResult result = "";
+            return result;
         }
     }
 }

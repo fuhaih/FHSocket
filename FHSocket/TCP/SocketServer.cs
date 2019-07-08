@@ -174,7 +174,8 @@ namespace FHSocket.TCP
             SocketAsyncEventArgs readEventArgs = m_readWritePool.Pop();
             ((AsyncUserToken)readEventArgs.UserToken).Socket = e.AcceptSocket;
             // As soon as the client is connected, post a receive to the connection
-            bool willRaiseEvent = e.AcceptSocket.ReceiveAsync(readEventArgs);
+            bool willRaiseEvent = e.AcceptSocket.ReceiveAsync(readEventArgs); 
+
             if (!willRaiseEvent)
             {
                 ProcessReceive(readEventArgs);
@@ -210,6 +211,10 @@ namespace FHSocket.TCP
         //
         private void ProcessReceive(SocketAsyncEventArgs e)
         {
+            /** 可以试一下使用两个SocketAsyncEventArgs进行操作
+             * 一个用来读数据，一个用来写数据
+            */
+
             // check if the remote host closed the connection
             AsyncUserToken token = (AsyncUserToken)e.UserToken;
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
